@@ -1,0 +1,55 @@
+Client HTTP
+
+  In implementarea temei am folosit laboratorul 10 pe post de schelet.
+Pe langa functiile implemetate in laborator in header-ul 'helpers', am
+implemetat si alte functii ajutatoare pe cont propriu, functii de printare
+a unor mesaje catre utilizator, functii de extragere a unor informatii necesare,
+precum cookies sau token JWT, cat si functii pentru formatarea mesajelor
+trimise catre server sau primite de la acesta (folosind biblioteca parson).
+
+  Dupa cum am precizat anterior, pentru parsarea mesajelor am folosit biblioteca
+recomandata in enuntul temei, parson. Toate operatiile de parsare fiind efectuate
+in functiile din header 
+	'format_params_to_JSON' 
+		- pentru formatarea datelor de login, 'username' si 'password', functia
+		a fost implemetata insa pentru cazuri mai generale, pastrandu-si 
+		functionalitatea pentru orice numar de paramatri, cu conditia ca
+		toti acestia sa fie string-uri,
+	'format_book_params_to_JSON'
+		- o functie a carei implemetare se asemanea cu cea anterioara, doar ca
+		aceasta este mai specifica, formatand doar detaliile unei carti ('title',
+		'author', 'genre', 'page_count', 'publisher'),
+	'extract+value'
+		- functie a carei rol este extragerea unei valori din raspunsul primit
+		de la server, cu conditia ca raspunsul sa fie un singur obiect JSON, ci
+		nu un array (folosita de exemplu pentru afisarea mesajelor de eroare
+		primite de la server),
+	'extract_array'
+		- functie a carei rol este extragerea detaliilor dintr-un array JSON, primit
+		ca raspuns de la server (cele returnate de comenzile 'get_books' si 'get_book').
+  Am ales aceasta biblioteca datorita implementarii 'lightweight' si a explicatiilor 
+oferite in vederea utilizarii acesteia.
+
+
+  Aplicatia principala de client, implementata in fisierul 'client.c', urmeaza, de 
+asemenea modelul clientului implemetat in laboratorul 10 avand, insa, functionalitati
+mai ample.
+  Am folosit o bulca 'do...while' pentru a citi comenzile introduse de utilizator
+la stdin, tratand in interiorul acesteia fiecare comanda in parte si avand grija
+sa afisez un mesaj de eroare utilizatorului in cazul in care acesta nu a introdus
+o comanda acceptata de catre server. 
+  Deschid o conexiune catre server in fiecare caz, avand grija sa o inchid la finalul 
+sesiunii.
+  In cadrul fiecarei comenzi ma folosesc de functiile implemetate in header-ul 'helpers'
+pentru a formata mesajele si raspunsurile si de functiile implemetate in header-ul
+'requests', care sunt asemanatoare cu cele implemetate in laboratorul 10, cu doua 
+modificari principale, si anume:
+	- ambele functii 'compute_post_request' si 'compute_get_request' primesc un parametru
+	in plus, aferent token-ului de autentificare JWT,
+	- functia 'compute_get_request' primeste un alt parametru in plus, 'isDELETE' care,
+	in cazul in care va fi setat, va modifica cererea GET intr-una de tip DELETE (o alta
+	functie separata putea fi implemtata in acest caz, dar am considerat ca aceasta ar
+	fi fost prea asemanatoare cu functia 'compute_get_request').
+  Verific in fiecare caz raspunsul serverului pentru a afisa mesaje relevante 
+utilizatorului (atat mesaje de OK cat si mesaje de EROARE, afisand ceva specific in primul
+caz si direct mesajul primit de la server - sau un mesaj default - in cel de-al doilea).
